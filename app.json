@@ -3,7 +3,7 @@
     "name": "React_Native_hw01",
     "slug": "React_Native_hw01",
     "version": "1.0.0",
-    "orientation": "portrait",
+    "orientation": "default",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "splash": {
