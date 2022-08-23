@@ -24,6 +24,9 @@ export default function LoginScreen() {
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
   const [securePassword, setSecurePassword] = useState(true);
 
+  const [focusEmail, setFocusEmail] = useState(false);
+  const [focusPassword, setFocusPassword] = useState(false);
+
   const { width } = useWindowDimensions();
 
   const keyboardHide = () => {
@@ -61,13 +64,19 @@ export default function LoginScreen() {
                 </View>
                 <View style={{ marginBottom: 16 }}>
                   <TextInput
-                    style={styles.input}
+                    style={{
+                      ...styles.input,
+                      borderColor: focusEmail ? "#ff6c00" : "#e8e8e8",
+                      backgroundColor: focusEmail ? "#fff" : "#f6f6f6",
+                    }}
                     value={state.email}
                     placeholder="Адрес электронной почты"
                     placeholderTextColor="#bdbdbd"
                     onFocus={() => {
                       setIsShowKeyboard(true);
+                      setFocusEmail(true);
                     }}
+                    onBlur={() => setFocusEmail(false)}
                     onChangeText={(value) => {
                       setState((prev) => ({ ...prev, email: value }));
                     }}
@@ -75,13 +84,19 @@ export default function LoginScreen() {
                 </View>
                 <View style={{ position: "relative" }}>
                   <TextInput
-                    style={styles.input}
+                    style={{
+                      ...styles.input,
+                      borderColor: focusPassword ? "#ff6c00" : "#e8e8e8",
+                      backgroundColor: focusPassword ? "#fff" : "#f6f6f6",
+                    }}
                     value={state.password}
                     placeholder="Пароль"
                     placeholderTextColor="#bdbdbd"
                     onFocus={() => {
                       setIsShowKeyboard(true);
+                      setFocusPassword(true);
                     }}
+                    onBlur={() => setFocusPassword(false)}
                     onChangeText={(value) => {
                       setState((prev) => ({ ...prev, password: value }));
                     }}
@@ -147,7 +162,7 @@ const styles = StyleSheet.create({
     marginBottom: 32,
   },
   headerTitle: {
-    fontFamily: 'Roboto-Medium',
+    fontFamily: "Roboto-Medium",
     fontSize: 30,
     fontWeight: "500",
     lineHeight: 35,
@@ -155,13 +170,13 @@ const styles = StyleSheet.create({
     color: "#212121",
   },
   input: {
-    fontFamily: 'Roboto-Regular',
+    fontFamily: "Roboto-Regular",
     borderWidth: 1,
     height: 50,
-    borderColor: "#e8e8e8",
+    // borderColor: "#e8e8e8",
     borderRadius: 8,
     paddingHorizontal: 16,
-    backgroundColor: "#f6f6f6",
+    // backgroundColor: "#f6f6f6",
     fontSize: 16,
     lineHeight: 19,
     color: "#212121",
@@ -172,11 +187,10 @@ const styles = StyleSheet.create({
     right: 16,
   },
   btnShowPassTitle: {
-    fontFamily: 'Roboto-Regular',
+    fontFamily: "Roboto-Regular",
     fontSize: 16,
     lineHeight: 19,
     color: "#1B4371",
-    // textAlign: 'right',
   },
   btn: {
     height: 50,
@@ -200,7 +214,7 @@ const styles = StyleSheet.create({
     color: Platform.OS === "ios" ? "#ff6c00" : "#fff",
     fontSize: 16,
     lineHeight: 19,
-    fontFamily: 'Roboto-Regular',
+    fontFamily: "Roboto-Regular",
   },
   link: {
     justifyContent: "center",
@@ -211,6 +225,6 @@ const styles = StyleSheet.create({
     color: "#1b4371",
     fontSize: 16,
     lineHeight: 19,
-    fontFamily: 'Roboto-Regular',
+    fontFamily: "Roboto-Regular",
   },
 });

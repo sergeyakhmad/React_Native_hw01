@@ -26,6 +26,10 @@ export default function RegistrationScreen() {
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
   const [securePassword, setSecurePassword] = useState(true);
 
+  const [focusLogin, setFocusLogin] = useState(false);
+  const [focusEmail, setFocusEmail] = useState(false);
+  const [focusPassword, setFocusPassword] = useState(false);
+
   const { width } = useWindowDimensions();
 
   const keyboardHide = () => {
@@ -66,13 +70,19 @@ export default function RegistrationScreen() {
                 </View>
                 <View style={{ marginBottom: 16 }}>
                   <TextInput
-                    style={styles.input}
+                    style={{
+                      ...styles.input,
+                      borderColor: focusLogin ? "#ff6c00" : "#e8e8e8",
+                      backgroundColor: focusLogin ? "#fff" : "#f6f6f6",
+                    }}
                     value={state.login}
                     placeholder="Логин"
                     placeholderTextColor="#bdbdbd"
                     onFocus={() => {
                       setIsShowKeyboard(true);
+                      setFocusLogin(true);
                     }}
+                    onBlur={() => setFocusLogin(false)}
                     onChangeText={(value) => {
                       setState((prev) => ({ ...prev, login: value }));
                     }}
@@ -80,13 +90,19 @@ export default function RegistrationScreen() {
                 </View>
                 <View style={{ marginBottom: 16 }}>
                   <TextInput
-                    style={styles.input}
+                    style={{
+                      ...styles.input,
+                      borderColor: focusEmail ? "#ff6c00" : "#e8e8e8",
+                      backgroundColor: focusEmail ? "#fff" : "#f6f6f6",
+                    }}
                     value={state.email}
                     placeholder="Адрес электронной почты"
                     placeholderTextColor="#bdbdbd"
                     onFocus={() => {
                       setIsShowKeyboard(true);
+                      setFocusEmail(true);
                     }}
+                    onBlur={() => setFocusEmail(false)}
                     onChangeText={(value) => {
                       setState((prev) => ({ ...prev, email: value }));
                     }}
@@ -94,17 +110,23 @@ export default function RegistrationScreen() {
                 </View>
                 <View style={{ position: "relative" }}>
                   <TextInput
-                    style={styles.input}
+                    style={{
+                      ...styles.input,
+                      borderColor: focusPassword ? "#ff6c00" : "#e8e8e8",
+                      backgroundColor: focusPassword ? "#fff" : "#f6f6f6",
+                    }}
                     value={state.password}
                     placeholder="Пароль"
                     placeholderTextColor="#bdbdbd"
                     onFocus={() => {
                       setIsShowKeyboard(true);
+                      setFocusPassword(true);
                     }}
+                    onBlur={() => setFocusPassword(false)}
                     onChangeText={(value) => {
                       setState((prev) => ({ ...prev, password: value }));
                     }}
-                    secureTextEntry={true}
+                    secureTextEntry={securePassword}
                   />
                   <TouchableOpacity
                     style={styles.btnShowPass}
@@ -183,10 +205,10 @@ const styles = StyleSheet.create({
     fontFamily: "Roboto-Regular",
     borderWidth: 1,
     height: 50,
-    borderColor: "#e8e8e8",
+    // borderColor: "#e8e8e8",
     borderRadius: 8,
     paddingHorizontal: 16,
-    backgroundColor: "#f6f6f6",
+    // backgroundColor: "#f6f6f6",
     fontSize: 16,
     lineHeight: 19,
     color: "#212121",
