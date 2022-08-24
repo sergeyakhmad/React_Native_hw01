@@ -39,6 +39,7 @@ export default function LoginScreen({ navigation }) {
     console.log(state);
 
     setState(initialState);
+    navigation.navigate("Home");
   };
 
   return (
