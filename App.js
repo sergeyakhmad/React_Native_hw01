@@ -1,9 +1,11 @@
-import { StatusBar } from "expo-status-bar";
-import { StyleSheet, Text, View } from "react-native";
 import { useFonts } from "expo-font";
+import { NavigationContainer } from "@react-navigation/native";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
-import LoginScreen from "./Screens/LoginScreen";
-// import RegistrationScreen from "./Screens/RegistrationScreen";
+import LoginScreen from "./Screens/auth/LoginScreen";
+import RegistrationScreen from "./Screens/auth/RegistrationScreen";
+
+const AuthStack = createNativeStackNavigator();
 
 export default function App() {
   const [fontsLoaded] = useFonts({
@@ -17,16 +19,21 @@ export default function App() {
   }
 
   return (
-    <View style={styles.container}>
-      {/* <RegistrationScreen /> */}
-      <LoginScreen />
-      <StatusBar style="auto" />
-    </View>
+    <NavigationContainer>
+      <AuthStack.Navigator initialRouteName="Register">
+        <AuthStack.Screen
+          name="Login"
+          component={LoginScreen}
+          options={{ headerShown: false }}
+        />
+        <AuthStack.Screen
+          name="Register"
+          component={RegistrationScreen}
+          options={{ headerShown: false }}
+        />
+      </AuthStack.Navigator>
+    </NavigationContainer>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-});
+//    <StatusBar style="auto" />

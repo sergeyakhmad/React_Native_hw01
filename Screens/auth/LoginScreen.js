@@ -19,7 +19,7 @@ const initialState = {
   password: "",
 };
 
-export default function LoginScreen() {
+export default function LoginScreen({ navigation }) {
   const [state, setState] = useState(initialState);
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
   const [securePassword, setSecurePassword] = useState(true);
@@ -46,7 +46,7 @@ export default function LoginScreen() {
       <View style={styles.container}>
         <ImageBackground
           style={styles.bg}
-          source={require("../assets/images/back_graund.jpg")}
+          source={require("../../assets/images/back_graund.jpg")}
         >
           <KeyboardAvoidingView
             // behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -55,7 +55,7 @@ export default function LoginScreen() {
             <View
               style={{
                 ...styles.form,
-                paddingBottom: isShowKeyboard ? 32 : 111,
+                paddingBottom: isShowKeyboard ? 32 : 144,
               }}
             >
               <View style={{ width: width - 2 * 16 }}>
@@ -123,7 +123,11 @@ export default function LoginScreen() {
                     >
                       <Text style={styles.btnTitle}>Войти</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity style={styles.link}>
+                    <TouchableOpacity
+                      style={styles.link}
+                      activeOpacity={0.8}
+                      onPress={() => navigation.navigate("Register")}
+                    >
                       <Text style={styles.linkTitle}>
                         Нет аккаунта? Зарегистрироваться
                       </Text>
