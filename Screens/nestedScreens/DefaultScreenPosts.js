@@ -1,81 +1,70 @@
 import React, { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import {
-  Button,
-  FlatList,
   Image,
   StyleSheet,
   Text,
-  TouchableOpacity,
   useWindowDimensions,
   View,
 } from "react-native";
-import { EvilIcons } from "@expo/vector-icons";
+import { db } from "../../firebase/config";
+import {
+  collection,
+  doc,
+  onSnapshot,
+  orderBy,
+  query,
+  updateDoc,
+} from "firebase/firestore";
+import PostsList from "../../components/PostsList";
 
-export default function DefaultScreenPosts({ route, navigation }) {
+export default function DefaultScreenPosts({ navigation }) {
   const [posts, setPosts] = useState([]);
   const { width } = useWindowDimensions();
 
-  useEffect(() => {
-    if (route.params) {
-      setPosts((prev) => [...prev, route.params]);
+  const { userId } = useSelector((state) => state.auth);
+
+  const addLike = async (postId, arrUserLikes) => {
+    const userExist = arrUserLikes.some((user) => user === userId);
+
+    if (!userExist) {
+      const docRef = doc(db, "posts", postId);
+      await updateDoc(docRef, { likes: [...arrUserLikes, userId] });
     }
-  }, [route.params]);
+  };
+
+  const getAllPosts = async () => {
+    const q = query(collection(db, "posts"), orderBy("date", "desc"));
+    onSnapshot(q, (querySnapshot) => {
+      setPosts(
+        querySnapshot.docs.map((doc) => ({ ...doc.data(), postId: doc.id }))
+      );
+    });
+  };
+
+  useEffect(() => {
+    getAllPosts();
+  }, []);
+
+  const { userAvatar, login, userEmail } = useSelector((state) => state.auth);
 
   return (
     <View style={styles.container}>
       <View style={styles.user}>
         <Image
-          source={require("../../assets/images/avatar.jpg")}
+          source={
+            userAvatar
+              ? { uri: userAvatar }
+              : require("../../assets/images/avatar.jpg")
+          }
           style={styles.avatar}
         />
         <View style={styles.userInfo}>
-          <Text style={styles.userName}>UserName</Text>
-          <Text style={styles.userEmail}>UserEmail</Text>
+          <Text style={styles.userName}>{login}</Text>
+          <Text style={styles.userEmail}>{userEmail}</Text>
         </View>
       </View>
-      <FlatList
-        data={posts}
-        keyExtractor={(item, indx) => indx.toString()}
-        renderItem={({ item }) => (
-          <View style={styles.listItem}>
-            <Image
-              source={{ uri: item.photo }}
-              style={{ ...styles.image, width: width - 32 }}
-            />
-            <Text style={styles.description}>{item.description}</Text>
-            <View style={styles.btnContainer}>
-              <TouchableOpacity
-                style={styles.btnComment}
-                onPress={() => navigation.navigate("Comments")}
-              >
-                <EvilIcons
-                  name="comment"
-                  size={24}
-                  color="#bdbdbd"
-                  style={{ marginRight: 6 }}
-                />
-                <Text style={styles.comments}>0</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.btnLocation}
-                onPress={() => navigation.navigate("Map", { ...item.location })}
-              >
-                <EvilIcons
-                  name="location"
-                  size={24}
-                  color="#bdbdbd"
-                  style={{ marginRight: 4 }}
-                />
-                <Text style={styles.location}>
-                  {item.locality
-                    ? `${item.locality}`
-                    : `${item.location.latitude} ${item.location.longitude}`}
-                </Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        )}
-      />
+      <PostsList posts={posts} />
     </View>
   );
 }
@@ -83,6 +72,7 @@ export default function DefaultScreenPosts({ route, navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    alignItems: "center", //
     paddingHorizontal: 16,
     backgroundColor: "#fff",
   },
@@ -130,24 +120,13 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
   },
-  btnComment: {
+  button: {
     flexDirection: "row",
-    marginRight: 10,
-    maxWidth: "20%",
+    alignItems: "center",
   },
-  comments: {
+  btnTitle: {
     fontSize: 16,
     lineHeight: 19,
     color: "#bdbdbd",
-  },
-  btnLocation: {
-    maxWidth: "80%",
-    flexDirection: "row",
-  },
-  location: {
-    fontSize: 16,
-    lineHeight: 19,
-    color: "#2121212",
-    textDecorationLine: "underline",
   },
 });

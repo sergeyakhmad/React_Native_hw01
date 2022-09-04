@@ -1,14 +1,16 @@
 import { useFonts } from "expo-font";
-import { NavigationContainer } from "@react-navigation/native";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { Provider } from "react-redux";
+import { store } from "./redux/store";
 
-import LoginScreen from "./Screens/auth/LoginScreen";
-import RegistrationScreen from "./Screens/auth/RegistrationScreen";
-import HomeScreen from "./Screens/main/HomeScreen";
-
-const AuthStack = createNativeStackNavigator();
+import { Main } from "./components/Main";
 
 export default function App() {
+  // useEffect(() => {
+  //   LogBox.ignoreLogs([
+  //     "Warning: Async Storage has been extracted from react-native core",
+  //   ]);
+  // }, []);
+
   const [fontsLoaded] = useFonts({
     "Roboto-Regular": require("./assets/fonts/Roboto-Regular.ttf"),
     "Roboto-Bold": require("./assets/fonts/Roboto-Bold.ttf"),
@@ -20,25 +22,9 @@ export default function App() {
   }
 
   return (
-    <NavigationContainer>
-      <AuthStack.Navigator initialRouteName="Register">
-        <AuthStack.Screen
-          name="Login"
-          component={LoginScreen}
-          options={{ headerShown: false }}
-        />
-        <AuthStack.Screen
-          name="Register"
-          component={RegistrationScreen}
-          options={{ headerShown: false }}
-        />
-        <AuthStack.Screen
-          name="Home"
-          component={HomeScreen}
-          options={{ headerShown: false }}
-        />
-      </AuthStack.Navigator>
-    </NavigationContainer>
+    <Provider store={store}>
+      <Main />
+    </Provider>
   );
 }
 

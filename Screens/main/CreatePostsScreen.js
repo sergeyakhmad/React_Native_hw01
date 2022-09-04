@@ -1,3 +1,5 @@
+import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import {
   Image,
   Keyboard,
@@ -13,10 +15,12 @@ import {
 } from "react-native";
 import { Camera } from "expo-camera";
 import * as Location from "expo-location";
-import { useEffect, useState } from "react";
 import { MaterialIcons } from "@expo/vector-icons";
 import { AntDesign } from "@expo/vector-icons";
 import { EvilIcons } from "@expo/vector-icons";
+import { db } from "../../firebase/config";
+import { addDoc, collection } from "firebase/firestore";
+import { uploadImageToServer } from "../../helpers/uploadImageToServer";
 
 const initialState = {
   photo: null,
@@ -36,6 +40,8 @@ export default function CreatePostsScreen({ navigation }) {
 
   const { width } = useWindowDimensions();
 
+  const { userId, login } = useSelector((state) => state.auth);
+
   useEffect(() => {
     (async () => {
       const cameraPermission = await Camera.requestCameraPermissionsAsync();
@@ -48,9 +54,6 @@ export default function CreatePostsScreen({ navigation }) {
   }, []);
 
   const takePhoto = async () => {
-    // console.log("hasPermissionCamera", hasPermissionCamera);
-    // console.log("hasPermissionLocation", hasPermissionLocation);
-
     if (cameraRef) {
       const picture = await cameraRef.takePictureAsync();
       setState((prevState) => ({ ...prevState, photo: picture.uri }));
@@ -62,21 +65,42 @@ export default function CreatePostsScreen({ navigation }) {
     Keyboard.dismiss();
   };
 
-  const handleSubmit = async () => {
-    const location = await Location.getCurrentPositionAsync({});
-    const coords = {
-      latitude: location.coords.latitude,
-      longitude: location.coords.longitude,
-    };
-    // const addres = await Location.reverseGeocodeAsync(coords);
+  const uploadPostToServer = async () => {
+    try {
+      const { description, locality, photo } = state;
 
-    navigation.navigate("Posts", {
-      screen: "DefaultScreen",
-      params: { ...state, location: coords },
-    });
+      const location = await Location.getCurrentPositionAsync({});
+      const coords = {
+        latitude: location.coords.latitude,
+        longitude: location.coords.longitude,
+      };
 
-    keyboardHide();
-    setState(initialState);
+      const imageURL = await uploadImageToServer(photo, "images");
+
+      const newPost = {
+        photo: imageURL,
+        description,
+        locality,
+        location: coords,
+        userId,
+        login,
+        date: Date.now().toString(),
+        comments: [],
+        likes: [],
+      };
+
+      await addDoc(collection(db, "posts"), newPost);
+
+      navigation.navigate("Posts", {
+        screen: "DefaultScreen",
+        params: { ...state, location: coords },
+      });
+
+      keyboardHide();
+      setState(initialState);
+    } catch (error) {
+      console.log("error", error);
+    }
   };
 
   if (hasPermissionCamera === null) {
@@ -162,7 +186,7 @@ export default function CreatePostsScreen({ navigation }) {
               ...styles.btn,
               backgroundColor: state.photo ? "#ff6c00" : "#f6f6f6",
             }}
-            onPress={handleSubmit}
+            onPress={uploadPostToServer}
             activeOpacity={0.8}
           >
             <Text
@@ -199,8 +223,6 @@ const styles = StyleSheet.create({
     position: "relative",
     height: 240,
     marginTop: 32,
-    // borderWidth: 1,
-    // borderColor: "#e8e8e8",
     borderRadius: 8,
     justifyContent: "center",
     alignItems: "center",

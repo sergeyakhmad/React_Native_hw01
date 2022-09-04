@@ -13,6 +13,8 @@ import {
   useWindowDimensions,
   View,
 } from "react-native";
+import { useDispatch } from "react-redux";
+import { authSignUpUser } from "../../redux/auth/authOperations";
 import Avatar from "../../components/Avatar";
 
 const initialState = {
@@ -22,7 +24,9 @@ const initialState = {
 };
 
 export default function RegistrationScreen({ navigation }) {
+  const dispatch = useDispatch();
   const [state, setState] = useState(initialState);
+
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
   const [securePassword, setSecurePassword] = useState(true);
 
@@ -39,10 +43,8 @@ export default function RegistrationScreen({ navigation }) {
 
   const handleSubmit = () => {
     keyboardHide();
-    console.log(state);
-
+    dispatch(authSignUpUser(state));
     setState(initialState);
-    navigation.navigate("Home");
   };
 
   return (
@@ -53,8 +55,7 @@ export default function RegistrationScreen({ navigation }) {
           source={require("../../assets/images/back_graund.jpg")}
         >
           <KeyboardAvoidingView
-            // behavior={Platform.OS === "ios" ? "padding" : "height"}
-            behavior={Platform.OS === "ios" && "padding"}
+            behavior={Platform.OS === "ios" ? "padding" : "height"}
           >
             <View
               style={{
@@ -83,7 +84,10 @@ export default function RegistrationScreen({ navigation }) {
                       setIsShowKeyboard(true);
                       setFocusLogin(true);
                     }}
-                    onBlur={() => setFocusLogin(false)}
+                    onBlur={() => {
+                      setIsShowKeyboard(false);
+                      setFocusLogin(false);
+                    }}
                     onChangeText={(value) => {
                       setState((prev) => ({ ...prev, login: value }));
                     }}
@@ -103,7 +107,10 @@ export default function RegistrationScreen({ navigation }) {
                       setIsShowKeyboard(true);
                       setFocusEmail(true);
                     }}
-                    onBlur={() => setFocusEmail(false)}
+                    onBlur={() => {
+                      setIsShowKeyboard(false);
+                      setFocusEmail(false);
+                    }}
                     onChangeText={(value) => {
                       setState((prev) => ({ ...prev, email: value }));
                     }}
@@ -123,7 +130,10 @@ export default function RegistrationScreen({ navigation }) {
                       setIsShowKeyboard(true);
                       setFocusPassword(true);
                     }}
-                    onBlur={() => setFocusPassword(false)}
+                    onBlur={() => {
+                      setIsShowKeyboard(false);
+                      setFocusPassword(false);
+                    }}
                     onChangeText={(value) => {
                       setState((prev) => ({ ...prev, password: value }));
                     }}
@@ -188,8 +198,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   avatarWrap: {
-    // justifyContent: "center",
-    // alignItems: "center",
     position: "absolute",
     top: -60,
   },
@@ -201,7 +209,6 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontFamily: "Roboto-Medium",
     fontSize: 30,
-    fontWeight: "500",
     lineHeight: 35,
     letterSpacing: 0.01,
     color: "#212121",
@@ -209,11 +216,9 @@ const styles = StyleSheet.create({
   input: {
     fontFamily: "Roboto-Regular",
     borderWidth: 1,
-    height: 50,
-    // borderColor: "#e8e8e8",
     borderRadius: 8,
+    height: 50,
     paddingHorizontal: 16,
-    // backgroundColor: "#f6f6f6",
     fontSize: 16,
     lineHeight: 19,
     color: "#212121",
